@@ -1,0 +1,23 @@
+server:
+  port: 8083
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka,http://127.0.0.1:8762/eureka
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+
+spring:
+  application:
+    name: eureka-service
+
+logging:
+  file: logs/eureka-service.log
+  level:
+    com.example.howtodoinjava: DEBUG
