@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.util.Properties;
 
 @Configuration
 public class ConfigurationContext {
@@ -20,7 +21,15 @@ public class ConfigurationContext {
     @Bean
     public EurekaInstanceConfig instanceConfig() throws IOException {
         ConfigurationManager.loadPropertiesFromResources("application.properties");
-        return new MyDataCenterInstanceConfig();
+        overridePropertyFromApplication();
+        MyDataCenterInstanceConfig myDataCenterInstanceConfig = new MyDataCenterInstanceConfig();
+        return myDataCenterInstanceConfig;
+    }
+
+    private void overridePropertyFromApplication() {
+        Properties props = new Properties();
+        props.setProperty("eureka.instanceId", "092183921803");
+        ConfigurationManager.loadProperties(props);
     }
 
     @Bean

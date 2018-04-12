@@ -33,9 +33,9 @@ public class ExampleEurekaService {
     private void waitForRegistrationWithEureka() {
         DynamicPropertyFactory configInstance = com.netflix.config.DynamicPropertyFactory.getInstance();
         // my vip address to listen on
-        String serverRegistration = configInstance.getStringProperty("eureka.vipAddress", "eureka-service:8085").get();
+        String serverRegistration = configInstance.getStringProperty("eureka.vipAddress", null).get();
         InstanceInfo nextServerInfo = null;
-        while (isaBoolean(nextServerInfo)) {
+        while (isMe(nextServerInfo)) {
             try {
                 nextServerInfo = eurekaClient.getNextServerFromEureka(serverRegistration, false);
             } catch (Throwable e) {
@@ -49,8 +49,9 @@ public class ExampleEurekaService {
         }
     }
 
-    private boolean isaBoolean(InstanceInfo nextServerInfo) {
-        return nextServerInfo == null || !String.valueOf(nextServerInfo.getPort()).equals(eurekaClient.getEurekaClientConfig().getEurekaServerPort());
+    private boolean isMe(InstanceInfo nextServerInfo) {
+        return nextServerInfo == null ||
+                !String.valueOf(nextServerInfo.getInstanceId()).equals(applicationInfoManager.getEurekaInstanceConfig().getInstanceId());
     }
 
     @PreDestroy
