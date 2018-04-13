@@ -10,6 +10,9 @@ import com.netflix.discovery.DefaultEurekaClientConfig;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
+import com.netflix.loadbalancer.*;
+import com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList;
+import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,6 +45,10 @@ public class ExampleEurekaClient {
 
     private void sendRequest(EurekaClient eurekaClient) {
         String serviceName = "eureka-service";
+        IRule rule = new AvailabilityFilteringRule();
+        findServer(eurekaClient, serviceName, rule);
+
+
         InstanceInfo nextServerInfo = createInstanceInfo(eurekaClient, serviceName);
 
         try {
@@ -53,6 +60,17 @@ public class ExampleEurekaClient {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void findServer(EurekaClient eurekaClient, String serviceName, IRule rule) {
+        ServerList<DiscoveryEnabledServer> list = new DiscoveryEnabledNIWSServerList(serviceName, () -> eurekaClient);
+        ServerListFilter<DiscoveryEnabledServer> filter = new ZoneAffinityServerListFilter<>();
+        ZoneAwareLoadBalancer<DiscoveryEnabledServer> lb = LoadBalancerBuilder.<DiscoveryEnabledServer>newBuilder()
+                .withDynamicServerList(list)
+                .withRule(rule)
+                .withServerListFilter(filter)
+                .buildDynamicServerListLoadBalancer();
+        DiscoveryEnabledServer server = (DiscoveryEnabledServer) lb.chooseServer();
     }
 
     private InstanceInfo createInstanceInfo(EurekaClient eurekaClient, String addressService) {
