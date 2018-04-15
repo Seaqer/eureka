@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 7777
 
 eureka:
   instance:
@@ -10,10 +10,10 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
 
 spring:
-  application:
-    name: eureka-service
-
-logging:
-  file: logs/eureka-service.log
-  level:
-    com.example.howtodoinjava: DEBUG
+  cloud:
+    config:
+      name: zuul-service
+      fail-fast: true
+      discovery:
+        service-id: config
+        enabled: true

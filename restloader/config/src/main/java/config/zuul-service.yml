@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: zuul
+
+zuul:
+  prefix: /service
+  routes:
+    test:
+      path: /redirect/**
+      url: http://google.com
+    customer-by-address:
+      path: /by-address/**
+      url: http://localhost:8083
+    customer-by-service:
+      path: /by-service/**
+      serviceId: eureka-service

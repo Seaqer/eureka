@@ -1,22 +1,6 @@
 server:
   port: ${PORT:8761}
 
-spring:
-  application:
-    name: registry-server
-
-eureka:
-  instance:
-    hostname: registry-server
-  server:
-    enableSelfPreservation: false
-    waitTimeInMsWhenSyncEmpty: 5000
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://localhost:8762/eureka/
-
 logging:
   file: logs/registry-server.log
   level:
